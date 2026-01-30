@@ -9,7 +9,6 @@ from agents import Agent, Runner, ModelSettings, function_tool
 
 load_dotenv(override=True)
 
-# Configuration de la page
 st.set_page_config(
     page_title="Yannis MOCUHARD - Assistant IA",
     page_icon="👤",
@@ -19,13 +18,11 @@ st.set_page_config(
 st.title("👤 Yannis MOCUHARD - Assistant IA")
 st.markdown("Posez vos questions sur mon parcours, mes expériences, mes projets et mes compétences!")
 
-# Initialiser l'index Upstash
 vector_index = Index(
     url=os.getenv("UPSTASH_VECTOR_REST_URL"),
     token=os.getenv("UPSTASH_VECTOR_REST_TOKEN")
 )
 
-# Définir la tool de recherche
 @function_tool
 def search_infos(query: str, top_k: int = 5) -> str:
     """Recherche des informations dans les données """
@@ -51,7 +48,6 @@ def search_infos(query: str, top_k: int = 5) -> str:
     except Exception as e:
         return f"Erreur: {str(e)}"
 
-# Créer l'agent
 agent = Agent(
     name="agent",
     instructions=""" Tu es Yannis MOCUHARD qui doit répondre au questions des utilisateurs (potentiellement des recruteurs) sur le parcours, les expériences, les projets et les compétences. Utilise les outils à ta disposition pour trouver les informations nécessaires et fournir des réponses précises, pertinentes et professionnelles.
@@ -61,16 +57,13 @@ agent = Agent(
     tools=[search_infos]
 )
 
-# Initialiser l'historique
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Afficher l'historique
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Zone d'entrée
 user_input = st.chat_input("Posez votre question...")
 
 if user_input:
@@ -80,12 +73,12 @@ if user_input:
         st.markdown(user_input)
     
     with st.chat_message("assistant"):
-        with st.spinner("⏳ Recherche en cours..."):
+        with st.spinner(" Recherche en cours..."):
             try:
                 result = Runner.run_sync(agent, user_input)
                 response = result.final_output
                 st.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
             except Exception as e:
-                error_msg = f"❌ Erreur: {str(e)}"
+                error_msg = f" Erreur: {str(e)}"
                 st.error(error_msg)

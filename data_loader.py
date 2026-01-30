@@ -8,7 +8,6 @@ import re
 load_dotenv()
 
 def chunk_markdown(content: str) -> list[str]:
-    """Divise le contenu en chunks cohérents"""
     sections = re.split(r'(^## .+$)', content, flags=re.MULTILINE)
     chunks = []
     
@@ -23,7 +22,6 @@ def chunk_markdown(content: str) -> list[str]:
     
     return chunks if chunks else [content.strip()]
 
-# Indexer
 idx = Index(url=os.getenv("UPSTASH_VECTOR_REST_URL"), token=os.getenv("UPSTASH_VECTOR_REST_TOKEN"))
 
 vectors = []
@@ -36,8 +34,7 @@ for md_file in Path("data").glob("*.md"):
             metadata={"source": md_file.stem}
         ))
 
-# Envoyer par batch
 for i in range(0, len(vectors), 100):
     idx.upsert(vectors=vectors[i:i + 100])
 
-print(f"✅ {len(vectors)} chunks indexés")
+print(f" {len(vectors)} chunks indexés")

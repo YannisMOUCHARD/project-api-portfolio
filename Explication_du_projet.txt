@@ -1,0 +1,61 @@
+================================================================================
+            EXPLICATIONS DES FICHIERS du projet iut portfolio
+================================================================================
+
+L'objectif de ce projet est de créer un chatbot connecter à notre portfolio qui 
+répondrais aux différentes questions des utilisateurs sur le portfolio.
+
+Pour cela j'ai créer deux fichiers répondant a ce projet.
+
+le premier qui est data_loader en fichier python qui va charger les fichiers 
+Mardown qui contient les données du portfolio et les indexés dans Upstash Vector.
+
+Le second fichier est utilisé pour créer une interface web interactive où les 
+utilisateurs peuvent poser des questions sur le portfolio.
+
+================================================================================
+1. DATA_LOADER.PY - Le chargeur de données
+================================================================================
+
+FONCTIONNEMENT DÉTAILLÉ:
+
+La première partie du fichier sert à séparer les données dans les fichiers Mardown
+pour avoir plusieurs index sur différentes données comme formation, expériences ...
+
+J'utilise cette ligne de code pour séparer les données : 
+sections = re.split(r'(^## .+$)', content, flags=re.MULTILINE)
+Le split permet de séparer les données en fonction de ce qui est mit en paramètre.
+Actuellement les vecteur vont se créer après chaque ##
+
+Le bloc de code suivant va permettre de regrouper les éléments par paires pour créer
+des chunks.
+Le code ignore les vecteurs trop cours pour pas les ajoutés dans les chunks.
+
+le bloc de code suivant va créer les vecteurs, et les envoyés vers le client 
+Upstash Vector. 
+
+================================================================================
+2. APP.PY - L'interface Streamlit
+================================================================================
+
+FONCTIONNEMENT DÉTAILLÉ:
+
+Le fichier app.py permet de faire une interface Streamlit qui expose un chatbot 
+assistant pour le portfolio de Yannis.
+
+Dans un premier temps le fichier va créer l'interface de la page, le but est 
+d'avoir une interface simple d'utilisation avec un espace pour poser ces questions 
+et un espace pour voir les réponses de l'utilisateur.
+
+Ensuite le fichier va crée un Agent avec des instructions (se faire passer pour Yannis).
+
+Ensuite le fichier va initialisé st.session_state.messages et affiche l'historique des messages de chat.
+
+A la soumission, la question est ajoutée à l'historique, puis Runner.run_sync(agent, user_input) 
+est appelé pour obtenir la réponse (utilise l'agent et l'outil de recherche). 
+
+La réponse est affichée et ajoutée à l'historique.
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================
