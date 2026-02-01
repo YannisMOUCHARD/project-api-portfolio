@@ -1,60 +1,88 @@
 ================================================================================
-            EXPLICATIONS DES FICHIERS du projet iut portfolio
+            EXPLICATIONS DES FICHIERS DU PROJET IUT PORTFOLIO
 ================================================================================
 
-L'objectif de ce projet est de créer un chatbot connecter à notre portfolio qui 
-répondrais aux différentes questions des utilisateurs sur le portfolio.
-
-Pour cela j'ai créer deux fichiers répondant a ce projet.
-
-le premier qui est data_loader en fichier python qui va charger les fichiers 
-Mardown qui contient les données du portfolio et les indexés dans Upstash Vector.
-
-Le second fichier est utilisé pour créer une interface web interactive où les 
-utilisateurs peuvent poser des questions sur le portfolio.
-
-================================================================================
-1. DATA_LOADER.PY - Le chargeur de données
+OBJECTIF DU PROJET
 ================================================================================
 
-FONCTIONNEMENT DÉTAILLÉ:
+Ce projet vise à créer un chatbot intelligent connecté à un portfolio personnel 
+qui répond aux différentes questions des utilisateurs sur le contenu du portfolio.
 
-La première partie du fichier sert à séparer les données dans les fichiers Mardown
-pour avoir plusieurs index sur différentes données comme formation, expériences ...
+Pour réaliser cet objectif, le projet est composé de deux fichiers principaux :
 
-J'utilise cette ligne de code pour séparer les données : 
-sections = re.split(r'(^## .+$)', content, flags=re.MULTILINE)
-Le split permet de séparer les données en fonction de ce qui est mit en paramètre.
-Actuellement les vecteur vont se créer après chaque ##
+1. data_loader.py : Fichier Python qui charge les fichiers Markdown contenant 
+   les données du portfolio et les indexe dans la base de données vectorielle 
+   Upstash Vector.
 
-Le bloc de code suivant va permettre de regrouper les éléments par paires pour créer
-des chunks.
-Le code ignore les vecteurs trop cours pour pas les ajoutés dans les chunks.
-
-le bloc de code suivant va créer les vecteurs, et les envoyés vers le client 
-Upstash Vector. 
+2. app.py : Fichier qui crée une interface web interactive (Streamlit) permettant 
+   aux utilisateurs de poser des questions sur le portfolio.
 
 ================================================================================
-2. APP.PY - L'interface Streamlit
+1. DATA_LOADER.PY - LE CHARGEUR DE DONNÉES
 ================================================================================
 
-FONCTIONNEMENT DÉTAILLÉ:
+FONCTIONNEMENT GÉNÉRAL
+================================================================================
 
-Le fichier app.py permet de faire une interface Streamlit qui expose un chatbot 
-assistant pour le portfolio de Yannis.
+Ce fichier charge les fichiers Markdown contenant les données du portfolio et 
+les traite pour créer des vecteurs indexés dans Upstash Vector.
 
-Dans un premier temps le fichier va créer l'interface de la page, le but est 
-d'avoir une interface simple d'utilisation avec un espace pour poser ces questions 
-et un espace pour voir les réponses de l'utilisateur.
+ÉTAPES DU PROCESSUS
 
-Ensuite le fichier va crée un Agent avec des instructions (se faire passer pour Yannis).
+1. Séparation des données
+   La première étape divise le contenu des fichiers Markdown en sections 
+   distinctes en fonction des en-têtes de niveau 2 (##). Cela permet d'organiser 
+   les données par catégories (formation, expériences, projets, etc.).
+   
+   Expression régulière utilisée :
+   sections = re.split(r'(^## .+$)', content, flags=re.MULTILINE)
+   
+   Cette expression sépare le contenu à chaque en-tête ## trouvé.
 
-Ensuite le fichier va initialisé st.session_state.messages et affiche l'historique des messages de chat.
+2. Création de chunks
+   Les données séparées sont ensuite regroupées par paires pour créer des chunks 
+   (segments) de contenu cohérents. Le code ignore les vecteurs trop courts 
+   pour éviter d'ajouter du bruit à l'index.
 
-A la soumission, la question est ajoutée à l'historique, puis Runner.run_sync(agent, user_input) 
-est appelé pour obtenir la réponse (utilise l'agent et l'outil de recherche). 
+3. Création et envoi des vecteurs
+   Le système crée des vecteurs (embeddings) à partir de chaque chunk et les 
+   envoie vers le client Upstash Vector pour indexation. 
 
-La réponse est affichée et ajoutée à l'historique.
+================================================================================
+2. APP.PY - L'INTERFACE STREAMLIT
+================================================================================
+
+FONCTIONNEMENT GÉNÉRAL
+================================================================================
+
+Ce fichier crée une interface Streamlit qui expose un chatbot assistant pour 
+le portfolio. Il gère à la fois l'affichage et la logique d'interaction avec 
+l'agent IA.
+
+ÉTAPES DU PROCESSUS
+
+1. Configuration de l'interface
+   Le fichier initialise d'abord la page avec un titre, une description et 
+   une présentation simple de l'application. L'objectif est de fournir une 
+   interface intuitive et facile à utiliser.
+
+2. Initialisation de l'agent
+   Un agent IA est créé avec des instructions spécifiques pour se faire passer 
+   pour Yannis (le propriétaire du portfolio) et répondre aux questions de 
+   manière personnalisée.
+
+3. Gestion de l'historique des messages
+   Le fichier initialise et gère st.session_state.messages pour maintenir 
+   l'historique complet de la conversation. Les messages précédents sont 
+   affichés à chaque rechargement de la page.
+
+4. Traitement des questions et réponses
+   Lorsqu'un utilisateur soumet une question :
+   - La question est ajoutée à l'historique
+   - L'agent est exécuté via Runner.run_sync(agent, user_input)
+   - L'outil de recherche vectorielle récupère les informations pertinentes
+   - La réponse est générée et affichée
+   - La réponse est ajoutée à l'historique pour continuité
 
 ================================================================================
 FIN DU DOCUMENT
